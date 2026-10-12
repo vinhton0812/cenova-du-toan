@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/logo.png">
+<title>APP DỰ TOÁN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: app shell — top bar (brand, role, tabs) over a single working column; tables scroll inside their own frame */
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --sunk:#e9eeec; --fg:#17211f; --muted:#5c6b67; --rule:#d3dcd9;
+  --accent:#0d6b5f; --accent-ink:#ffffff; --accent-soft:#d9ece8;
+  --warn:#9a5b00; --warn-soft:#fbefd9; --bad:#b3261e; --bad-soft:#fbe3e1; --good:#1f7a3a; --good-soft:#dff1e4;
+  --l1:#0d6b5f; --l2:#2f5fa7; --l3:#9a5b00; --l4:#7b4fa0; --l9:#6b7774;
+  --font-ui:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101615; --surface:#172020; --sunk:#1e2928; --fg:#e4ecea; --muted:#94a5a0; --rule:#2c3a38;
+  --accent:#4cc2ae; --accent-ink:#06211c; --accent-soft:#163a34;
+  --warn:#f0b357; --warn-soft:#3a2a10; --bad:#ff8a80; --bad-soft:#3d1a18; --good:#7fd69a; --good-soft:#14321e;
+  --l1:#4cc2ae; --l2:#7fa8ec; --l3:#f0b357; --l4:#c39be6; --l9:#9aa8a4; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101615; --surface:#172020; --sunk:#1e2928; --fg:#e4ecea; --muted:#94a5a0; --rule:#2c3a38;
+  --accent:#4cc2ae; --accent-ink:#06211c; --accent-soft:#163a34;
+  --warn:#f0b357; --warn-soft:#3a2a10; --bad:#ff8a80; --bad-soft:#3d1a18; --good:#7fd69a; --good-soft:#14321e;
+  --l1:#4cc2ae; --l2:#7fa8ec; --l3:#f0b357; --l4:#c39be6; --l9:#9aa8a4; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:14px;line-height:1.5;margin:0}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+.num,.mono,td.n{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.25}
+h2{font-size:18px;font-weight:700}
+h3{font-size:14px;font-weight:600}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)}
+small,.sm{font-size:12px}
+a{color:var(--accent)}
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--rule)}
+.top-in{max-width:1280px;margin:0 auto;padding-inline:16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding-block:10px}
+.brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+.wordmark{white-space:nowrap;font-weight:700;letter-spacing:.22em;font-size:15px}
+.wordmark b{display:inline-block;width:.9em;height:.9em;border:2.5px solid currentColor;border-radius:50%;vertical-align:-1px;margin:0 .05em}
+.brand .sub{font-size:12px;color:var(--muted)}
+.brand{align-items:center}.logo{height:30px;width:auto;display:block}.appname{font-weight:700;font-size:13px;letter-spacing:.14em;color:var(--fg);border-left:1px solid var(--rule);padding-left:12px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .logo{filter:invert(1)}}
+:root[data-theme="dark"] .logo{filter:invert(1)}
+@media (max-width:600px){.logo{height:24px}.appname{font-size:11px}}
+.role{margin-left:auto;display:flex;align-items:center;gap:8px}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;width:100%;scrollbar-width:none}
+nav.tabs button{border:0;background:none;color:var(--muted);font:inherit;font-weight:600;padding:8px 12px;border-radius:var(--r) var(--r) 0 0;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent}
+nav.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+nav.tabs button:disabled{opacity:.35;cursor:not-allowed}
+/* controls */
+button.b,.b{font:inherit;font-weight:600;font-size:13px;border:1px solid var(--rule);background:var(--surface);color:var(--fg);padding:7px 12px;border-radius:var(--r);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.b.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.b.ghost{border-color:transparent;background:transparent}
+.b.sm{padding:4px 8px;font-size:12px}
+.b:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:6px 8px;min-width:0}
+input[type=number]{font-family:var(--font-mono)}
+input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px;vertical-align:-3px}
+label.f{display:flex;flex-direction:column;gap:4px}
+label.ck{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.split{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) 340px;align-items:start}
+@media (max-width:960px){.split{grid-template-columns:minmax(0,1fr)}.split>aside{position:static!important}}
+@media (max-width:600px){.brand .sub{display:none}}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:16px;min-width:0}
+.panel>h2,.panel>h3{margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row.sb{justify-content:space-between}
+.stack{display:flex;flex-direction:column;gap:12px}
+.pts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.pt{border:1px solid var(--rule);border-radius:var(--r);padding:8px;display:flex;flex-direction:column;gap:4px;background:var(--surface)}
+.pt input{width:100%}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;border-right:1px solid var(--rule);background:var(--surface);color:var(--fg);font:inherit;font-size:13px;padding:7px 12px;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+/* banners & pills */
+.banner{padding:10px 12px;border-radius:var(--r);font-size:13px;display:flex;gap:10px;align-items:flex-start}
+.banner.warn{background:var(--warn-soft);color:var(--warn)}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.banner.info{background:var(--accent-soft);color:var(--fg)}
+.banner.good{background:var(--good-soft);color:var(--good)}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.TC{background:var(--accent-soft);color:var(--accent)}
+.pill.VT{background:var(--sunk);color:var(--fg)}
+.pill.TB{background:var(--warn-soft);color:var(--warn)}
+.pill.DV,.pill.PN{background:color-mix(in srgb,var(--l4) 18%,transparent);color:var(--l4)}
+.pill.ok{background:var(--good-soft);color:var(--good)}
+.pill.hi{background:var(--bad-soft);color:var(--bad)}
+.pill.lo{background:var(--warn-soft);color:var(--warn)}
+.st{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid currentColor}
+.st.nhap{color:var(--muted)} .st.gui{color:var(--l2)} .st.ky{color:var(--accent)} .st.thicong{color:var(--warn)} .st.quyettoan{color:var(--good)}
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kpi{display:flex;flex-direction:column;gap:2px}
+.kpi .v{font-family:var(--font-mono);font-size:20px;font-weight:500;font-variant-numeric:tabular-nums}
+.kpi .v.big{font-size:28px}
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--rule);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;font-weight:600;padding:8px;border-bottom:1px solid var(--rule);background:var(--sunk);position:sticky;top:0;white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid var(--rule);vertical-align:top}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.off td{opacity:.45}
+tr.off td.keep{opacity:1}
+tr.grp td{background:var(--sunk);font-weight:700;font-size:12px}
+tr.lay td{font-weight:700;font-size:13px;border-top:2px solid var(--rule)}
+td input[type=number]{width:84px;text-align:right;padding:3px 6px}
+td select{padding:3px 4px;font-size:12px;max-width:112px}
+.code{font-family:var(--font-mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:0}
+/* bars */
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:150px 1fr 120px;gap:8px;align-items:center;font-size:13px}
+@media (max-width:520px){.bar{grid-template-columns:100px 1fr 96px}}
+.track{height:12px;background:var(--sunk);border-radius:3px;overflow:hidden}
+.fill{height:100%;border-radius:3px}
+.range{position:relative;height:40px;margin-top:8px}
+.range .line{position:absolute;top:18px;left:0;right:0;height:4px;background:var(--sunk);border-radius:2px}
+.range .band{position:absolute;top:14px;height:12px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:3px}
+.range .dot{position:absolute;top:10px;width:4px;height:20px;background:var(--accent);border-radius:2px;transform:translateX(-2px)}
+/* quote sheet */
+.sheet{background:#fff;color:#1b1b1b;max-width:860px;margin:0 auto;padding:40px 44px;border:1px solid var(--rule);box-shadow:0 1px 3px rgba(0,0,0,.08);font-size:13px}
+.sheet table{font-size:12.5px} .sheet th{background:#eef2f1;color:#46524f;position:static} .sheet td,.sheet th{border-color:#d7dedc}
+.sheet h1{font-size:22px;letter-spacing:.02em}
+.sheet .tot td{font-weight:700}
+.sheet .muted{color:#5f6b68}
+@media (max-width:640px){.sheet{padding:20px 16px}}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:var(--r);font-size:13px;z-index:50;max-width:calc(100% - 32px)}
+.empty{padding:32px 16px;text-align:center;color:var(--muted)}
+
+.drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:2px dashed var(--rule);border-radius:8px;padding:28px 16px;text-align:center;cursor:pointer;background:var(--sunk)}
+.drop.over,.drop:hover{border-color:var(--accent);background:var(--accent-soft)}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.thumb{border:1px solid var(--rule);border-radius:var(--r);padding:8px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.thumb img,.thumb .ph{width:100%;aspect-ratio:4/3;object-fit:contain;background:#fff;border-radius:4px;border:1px solid var(--rule)}
+.thumb .ph{display:flex;align-items:center;justify-content:center;color:#5c6b67;font-weight:700}
+
+.hs-grid{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.hs-grid{grid-template-columns:minmax(0,1fr)}}
+.hs-list{position:sticky;top:120px;gap:10px}
+.hs-item{display:flex;flex-wrap:wrap;gap:2px 6px;width:100%;text-align:left;border:1px solid transparent;background:none;color:var(--fg);font:inherit;font-size:13px;padding:6px 8px;border-radius:var(--r);cursor:pointer}
+.hs-item .sm{width:100%}
+.hs-item:hover{background:var(--sunk)}.hs-item[aria-current="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.docprev{background:#fff;color:#1b1b1b;border:1px solid var(--rule);border-radius:6px;padding:20px;margin-top:8px;max-height:70vh;overflow:auto;font-size:12.5px;line-height:1.55}
+.docprev table{margin:6px 0;border:1px solid #d7dedc}.docprev td{border:1px solid #e3e8e6;padding:4px 6px}.docprev p{margin:0 0 4px}
+.docprev mark{background:#d9ece8;color:#0b4f46;padding:0 2px;border-radius:2px}.docprev .miss{background:#fbefd9;color:#9a5b00}
+details>summary{cursor:pointer;font-weight:600}
+.hide-sale .cost-col{display:none}
+@media (prefers-reduced-motion:no-preference){.fill,.band,.dot{transition:all .25s ease}}
+/* bản web: thanh tài khoản + màn đăng nhập */
+#sb_chip{position:fixed;right:12px;bottom:12px;z-index:50;display:flex;gap:6px;align-items:center;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:4px 8px;font-size:12px;color:var(--muted);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+#sb_chip span{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.login{padding:0 16px}
+.login .brand{display:flex;align-items:center;gap:10px}
+.login input{width:100%}
+@media print{#sb_chip{display:none}}
+
+</style>
+
+</head>
+<body>
+<div id="app"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+const APP_BUNDLE='app.1cbb9b3867.js';
+/* ===================== LỚP NỐI SUPABASE (thay window.claude của bản claude.ai) =====================
+   Giữ nguyên toàn bộ logic app v7: app vẫn gọi window.claude.use('db'|'user'|'downloads'|'assets'|'sample').
+   Chỉ dùng URL + khoá publishable (công khai). Mọi quyền do RLS trên Supabase quyết định. */
+const SB_URL = 'https://mihlrktmodxnqvxlbtdp.supabase.co';
+const SB_KEY = 'sb_publishable_fsuVJ44ZpJkBjhsBNvx68Q_G5NKXRz-';
+const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+let SB_USER = null, SB_PROFILE = null;
+
+const isoZ = t => t ? new Date(t).toISOString() : null;
+const sbErr = (error) => { const e = new Error(error?.message || 'Lỗi CSDL'); e.code = error?.code || 'db_error'; return e; };
+async function must(p) { const { data, error } = await p; if (error) throw sbErr(error); return data; }
+async function projUuid(legacy) { const r = await must(sb.from('qs_projects').select('id').eq('legacy_id', legacy).maybeSingle()); return r?.id || null; }
+
+/* ---------- Ánh xạ collection của app → bảng qs_* ---------- */
+const COLS = {
+  projects: {
+    tables: ['qs_projects'],
+    async list() { const rows = await must(sb.from('qs_projects').select('legacy_id,doc')); return rows.filter(r => r.doc && Object.keys(r.doc).length).map(r => [r.legacy_id, r.doc]); },
+    async set(id, d) {
+      let rows = await must(sb.from('qs_projects').update({ doc: d }).eq('legacy_id', id).select('id'));
+      if (!rows.length) rows = await must(sb.from('qs_projects').insert({ doc: d, legacy_id: id, code: d.ma || id, name: d.ten || '', type: 'nha', area_m2: 1 }).select('id'));
+      const pid = rows[0].id;
+      // dòng dự toán chuẩn hoá (phục vụ báo cáo); tài liệu gốc vẫn là doc
+      await must(sb.from('qs_estimate_lines').delete().eq('project_id', pid));
+      const L = (d.lines || []).map((l, i) => ({
+        project_id: pid, sort: i, price_code: l.custom ? null : (CAT[l.code] ? l.code : null),
+        code: l.code || '', name: l.name || '', unit: l.unit || '', qty: +l.qty || 0, cost: +l.cost || 0,
+        bien: ['TC', 'VT', 'TB', 'DV', 'PN'].includes(l.bien) ? l.bien : 'TC', k_tech: l.kkt || null, enabled: l.on !== false,
+        owner_supplied: !!l.cdt, is_custom: !!l.custom, ai_conf: l.ai || null, kts_price: l.kts != null && l.kts !== '' ? +l.kts : null, source: l.src || null }));
+      for (let i = 0; i < L.length; i += 500) await must(sb.from('qs_estimate_lines').insert(L.slice(i, i + 500)));
+      await must(sb.from('qs_project_members').delete().eq('project_id', pid));
+      const M = (d.assignees || []).filter(x => /^[0-9a-f-]{36}$/i.test(x)).map(u => ({ project_id: pid, user_id: u }));
+      if (M.length) await must(sb.from('qs_project_members').insert(M));
+    },
+    async del(id) { await must(sb.from('qs_projects').delete().eq('legacy_id', id)); }
+  },
+  expenses: {
+    tables: ['qs_expenses'],
+    async list() {
+      const rows = await must(sb.from('qs_expenses').select('data,created_at,project:qs_projects(legacy_id)').order('created_at'));
+      const g = {}; for (const r of rows) { const k = r.project?.legacy_id; if (!k) continue; (g[k] = g[k] || { rows: [] }).rows.push(r.data); }
+      return Object.entries(g);
+    },
+    async set(id, d) {
+      const pid = await projUuid(id); if (!pid) throw sbErr({ message: 'Không tìm thấy dự án' });
+      await must(sb.from('qs_expenses').delete().eq('project_id', pid));
+      const R = (d.rows || []).map(x => ({ project_id: pid, code: x.code || null, description: [x.doc, x.vendor].filter(Boolean).join(' · ') || null, amount: +x.amount || 0, spent_on: x.date || null, data: x }));
+      if (R.length) await must(sb.from('qs_expenses').insert(R));
+    },
+    async del(id) { const pid = await projUuid(id); if (pid) await must(sb.from('qs_expenses').delete().eq('project_id', pid)); }
+  },
+  proposals: {
+    tables: ['qs_price_proposals'],
+    async list() { const rows = await must(sb.from('qs_price_proposals').select('legacy_id,id,code,cost,reason,status,created_at,data')); return rows.map(r => [r.legacy_id || r.id, Object.keys(r.data || {}).length ? r.data : { code: r.code, cost: +r.cost, why: r.reason, status: r.status, at: isoZ(r.created_at) }]); },
+    async set(id, d) {
+      const row = { code: d.code, cost: +d.cost || 0, reason: d.why || '', status: ['cho', 'duyet', 'tuchoi'].includes(d.status) ? d.status : 'cho', data: d };
+      const u = await must(sb.from('qs_price_proposals').update(row).eq('legacy_id', id).select('id'));
+      if (!u.length) await must(sb.from('qs_price_proposals').insert({ ...row, legacy_id: id }));
+    },
+    async del(id) { await must(sb.from('qs_price_proposals').delete().eq('legacy_id', id)); }
+  },
+  catalog: {
+    tables: ['qs_price_catalog'],
+    async list() {
+      const rows = await must(sb.from('qs_price_catalog').select('code,name,unit,spec,cost,bien,market_min,market_max,source,active,created_at,data').eq('is_custom', true));
+      return rows.map(r => [r.code, Object.keys(r.data || {}).length ? { ...r.data, active: r.active } : { name: r.name, unit: r.unit, spec: r.spec || '', cost: +r.cost, bien: r.bien, mmin: +r.market_min || 0, mmax: +r.market_max || 0, src: r.source || '', active: r.active, at: isoZ(r.created_at) }]);
+    },
+    async set(code, d) {
+      const row = { group_code: code.slice(0, 4), name: d.name, unit: d.unit || 'gói', spec: d.spec || '', cost: Math.max(0, +d.cost || 0), bien: ['TC', 'VT', 'TB', 'DV', 'PN'].includes(d.bien) ? d.bien : 'TC', market_min: +d.mmin || 0, market_max: +d.mmax || 0, source: d.src || '', active: d.active !== false, data: d, updated_at: new Date().toISOString() };
+      const u = await must(sb.from('qs_price_catalog').update(row).eq('code', code).select('code'));
+      if (!u.length) await must(sb.from('qs_price_catalog').insert({ ...row, code, is_custom: true, created_by: SB_USER.id }));
+    },
+    async del(code) { await must(sb.from('qs_price_catalog').update({ active: false }).eq('code', code)); }
+  },
+  settings: {
+    tables: ['qs_settings'],
+    async list() { const rows = await must(sb.from('qs_settings').select('key,value')); return rows.map(r => [r.key, r.value]); },
+    async set(k, d) { await must(sb.from('qs_settings').upsert({ key: k, value: d, updated_by: SB_USER.id, updated_at: new Date().toISOString() })); },
+    async del(k) { await must(sb.from('qs_settings').delete().eq('key', k)); }
+  },
+  versions: {
+    tables: ['qs_price_versions'],
+    async list() { const rows = await must(sb.from('qs_price_versions').select('no,label,issued_at,params,data').order('no')); return rows.map(r => ['v' + r.no, Object.keys(r.data || {}).length ? r.data : { no: r.no, label: r.label, date: r.issued_at, changes: {}, params: r.params || {}, status: 'issued' }]); },
+    async set(id, d) { await must(sb.from('qs_price_versions').upsert({ no: d.no, label: d.label || id, issued_at: d.date || undefined, params: d.params || {}, data: d, issued_by: SB_USER.id })); },
+    async del(id) { await must(sb.from('qs_price_versions').delete().eq('no', +String(id).replace(/^v/, ''))); }
+  },
+  roles: {
+    tables: ['qs_profiles'],
+    async list() { const rows = await must(sb.from('qs_profiles').select('id,role,active,role_set_at,role_set_by').not('role', 'is', null)); return rows.map(r => [r.id, { role: r.role, active: r.active, at: isoZ(r.role_set_at), by: r.role_set_by }]); },
+    async set(id, d) { await must(sb.from('qs_profiles').update({ role: d.role, active: d.active !== false }).eq('id', id)); },
+    async del(id) { await must(sb.from('qs_profiles').update({ role: null }).eq('id', id)); }
+  },
+  audit: {
+    tables: ['qs_audit_log'],
+    async list() {
+      const since = new Date(Date.now() - 8 * 864e5).toISOString();
+      const rows = await must(sb.from('qs_audit_log').select('at,user_id,role,action,ref,detail').gte('at', since).order('at').limit(3000));
+      const g = {}; for (const r of rows) { const day = isoZ(r.at).slice(0, 10); (g[day] = g[day] || { entries: [] }).entries.push({ at: isoZ(r.at), uid: r.user_id, role: r.role, act: r.action, ref: r.ref || '', d: r.detail || '' }); }
+      return Object.entries(g);
+    },
+    async set(day, d) { // nhật ký chỉ thêm: ghi mục mới nhất
+      const e = (d.entries || []).slice(-1)[0]; if (!e) return;
+      await must(sb.from('qs_audit_log').insert({ user_id: SB_USER.id, role: ['sale', 'dutoan', 'chihuy', 'gd'].includes(e.role) ? e.role : null, action: e.act, ref: e.ref || null, detail: e.d || null }));
+    },
+    async del() { }
+  }
+};
+
+/* ---------- API kiểu tài liệu cho app ---------- */
+const listeners = {}; // col -> Set(fn)
+async function refresh(col) {
+  const L = listeners[col]; if (!L || !L.size) return;
+  try { const docs = (await COLS[col].list()).map(([id, d]) => ({ id, data: () => d })); for (const l of L) l.ok({ docs }); }
+  catch (e) { console.error('[supa] tải', col, e); for (const l of L) l.err && l.err(e); }
+}
+const timers = {};
+const soon = col => { clearTimeout(timers[col]); timers[col] = setTimeout(() => refresh(col), 250); };
+function watchTables() {
+  const ch = sb.channel('cnv-db');
+  for (const [col, c] of Object.entries(COLS)) for (const t of c.tables) ch.on('postgres_changes', { event: '*', schema: 'public', table: t }, () => soon(col));
+  ch.subscribe();
+}
+const DB = {
+  collection(col) {
+    return {
+      onSnapshot(ok, err) { (listeners[col] = listeners[col] || new Set()).add({ ok, err }); refresh(col); return () => { }; }
+    };
+  },
+  doc(path) {
+    const i = path.indexOf('/'); const col = path.slice(0, i), id = path.slice(i + 1);
+    const C = COLS[col]; if (!C) throw new Error('Không hỗ trợ ' + col);
+    return {
+      async set(data) { await C.set(id, data); soon(col); },
+      async delete() { await C.del(id); soon(col); }
+    };
+  }
+};
+
+/* ---------- Người dùng ---------- */
+const USER = {
+  async me() { return { id: SB_USER.id, name: SB_PROFILE?.full_name || SB_USER.email, email: SB_USER.email, isOwner: SB_PROFILE?.role === 'gd' && SB_PROFILE?.active !== false, canEdit: SB_PROFILE?.role === 'gd' }; },
+  async profiles(ids) { const rows = await must(sb.from('qs_profiles').select('id,full_name,email').in('id', ids)); return Object.fromEntries(rows.map(r => [r.id, { name: r.full_name || r.email }])); },
+  async search(q) {
+    q = (q || '').trim().replace(/[%,()]/g, ' ');
+    let qr = sb.from('qs_profiles').select('id,full_name,email,active').limit(8);
+    if (q) qr = qr.or(`full_name.ilike.%${q}%,email.ilike.%${q}%`);
+    const rows = await must(qr); return rows.map(r => ({ id: r.id, name: (r.full_name || r.email) + (r.active ? '' : ' · chờ duyệt'), isMe: r.id === SB_USER.id }));
+  }
+};
+
+/* ---------- Tải file về máy ---------- */
+const MIME = { xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', pdf: 'application/pdf', html: 'text/html;charset=utf-8', json: 'application/json', csv: 'text/csv;charset=utf-8', txt: 'text/plain;charset=utf-8', zip: 'application/zip' };
+const DOWNLOADS = {
+  async save({ filename, data }) {
+    const ext = (filename.split('.').pop() || '').toLowerCase();
+    const blob = data instanceof Blob ? data : new Blob([data], { type: MIME[ext] || 'application/octet-stream' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+  }
+};
+
+/* ---------- Lưu bản vẽ gốc (bucket riêng tư drawings) ---------- */
+const ASSETS = {
+  async upload(file, opts) {
+    const safe = (file.name || 'file').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w.-]+/g, '_').slice(-80);
+    const path = `${SB_USER.id}/${Date.now().toString(36)}-${safe}`;
+    const { error } = await sb.storage.from('drawings').upload(path, file, { contentType: opts?.type || file.type || undefined, upsert: false });
+    if (error) throw sbErr(error); return { id: path };
+  },
+  async url(id) { const { data, error } = await sb.storage.from('drawings').createSignedUrl(id, 3600); if (error) throw sbErr(error); return data.signedUrl; }
+};
+
+/* ---------- AI bóc khối lượng: Edge Function analyze-drawing (khoá Anthropic nằm trong secrets) ---------- */
+const blobB64 = b => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = no; r.readAsDataURL(b); });
+function parseJsonLoose(t) {
+  t = String(t || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+  try { return JSON.parse(t); } catch (e) { }
+  const a = t.indexOf('{'), b = t.lastIndexOf('}'); if (a >= 0 && b > a) { try { return JSON.parse(t.slice(a, b + 1)); } catch (e) { } }
+  const x = new Error('invalid_json'); x.code = 'invalid_json'; throw x;
+}
+const SAMPLE = {
+  async limits() { return { images: { maxCount: 8 } }; },
+  async json(prompt, opts = {}) {
+    const images = [];
+    for (const b of opts.images || []) images.push({ media_type: b.type || 'image/jpeg', data: await blobB64(b) });
+    const { data: { session } } = await sb.auth.getSession();
+    let r;
+    try {
+      r = await fetch(`${SB_URL}/functions/v1/analyze-drawing`, { method: 'POST', signal: opts.signal, headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + session.access_token }, body: JSON.stringify({ prompt, images, tier: opts.modelTier || 'complex' }) });
+    } catch (e) { const x = new Error(e.name === 'AbortError' ? 'cancelled' : 'network'); x.code = e.name === 'AbortError' ? 'cancelled' : 'network'; throw x; }
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || j.error) { const x = new Error(j.error?.message || ('HTTP ' + r.status)); x.code = j.error?.code || (r.status === 404 ? 'sampling_disabled' : 'http_' + r.status); throw x; }
+    try { opts.onText && opts.onText({ text: j.text || '' }); } catch (e) { }
+    return parseJsonLoose(j.text);
+  }
+};
+
+window.claude = { async use(name) { return { db: DB, user: USER, downloads: DOWNLOADS, assets: ASSETS, sample: SAMPLE }[name] || null; } };
+
+/* ---------- Đăng nhập email ---------- */
+function loginScreen(msg) {
+  const el = document.getElementById('app');
+  el.innerHTML = `<div class="login"><div class="panel stack" style="max-width:380px;margin:12vh auto;padding:28px">
+   <div class="brand"><img class="logo" src="assets/logo.png" alt="CENOVA Design &amp; Build" width="132" height="36"><span class="appname">APP DỰ TOÁN</span></div>
+   <h2 style="margin:8px 0 0">Đăng nhập</h2>
+   <label class="f"><span class="lbl">Email công ty</span><input id="lg_email" type="email" autocomplete="email" placeholder="ten@cenovaasia.com"></label>
+   <label class="f"><span class="lbl">Mật khẩu</span><input id="lg_pw" type="password" autocomplete="current-password" placeholder="Để trống nếu muốn nhận link qua email"></label>
+   <div class="row" style="gap:8px;flex-wrap:wrap"><button class="b pri" id="lg_go">Đăng nhập</button><button class="b" id="lg_link">Gửi link đăng nhập qua email</button></div>
+   <button class="b sm ghost" id="lg_reset" style="align-self:flex-start">Quên / đặt mật khẩu</button>
+   <div id="lg_msg" class="sm ${msg ? '' : 'muted'}">${msg || 'Tài khoản do Giám đốc mời. Lần đầu: bấm “Gửi link đăng nhập”, mở email và bấm link.'}</div></div></div>`;
+  const $m = t => { document.getElementById('lg_msg').textContent = t; };
+  const em = () => document.getElementById('lg_email').value.trim().toLowerCase();
+  document.getElementById('lg_go').onclick = async () => {
+    const pw = document.getElementById('lg_pw').value;
+    if (!em()) return $m('Nhập email.');
+    if (!pw) return document.getElementById('lg_link').click();
+    $m('Đang đăng nhập…'); const { error } = await sb.auth.signInWithPassword({ email: em(), password: pw });
+    if (error) $m('Không đăng nhập được: ' + (error.message === 'Invalid login credentials' ? 'sai email hoặc mật khẩu' : error.message));
+  };
+  document.getElementById('lg_link').onclick = async () => {
+    if (!em()) return $m('Nhập email.');
+    $m('Đang gửi…'); const { error } = await sb.auth.signInWithOtp({ email: em(), options: { emailRedirectTo: location.origin + location.pathname } });
+    $m(error ? 'Không gửi được: ' + error.message : 'Đã gửi link tới ' + em() + '. Mở email và bấm link để vào app.');
+  };
+  document.getElementById('lg_reset').onclick = async () => {
+    if (!em()) return $m('Nhập email trước.');
+    const { error } = await sb.auth.resetPasswordForEmail(em(), { redirectTo: location.origin + location.pathname + '#dat-mat-khau' });
+    $m(error ? 'Không gửi được: ' + error.message : 'Đã gửi email đặt mật khẩu tới ' + em() + '.');
+  };
+  document.getElementById('lg_pw').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('lg_go').click(); });
+}
+function userChip() {
+  let c = document.getElementById('sb_chip'); if (c) return;
+  c = document.createElement('div'); c.id = 'sb_chip';
+  c.innerHTML = `<span>${SB_USER.email}</span><button class="b sm ghost" id="sb_pw">Đặt mật khẩu</button><button class="b sm ghost" id="sb_out">Đăng xuất</button>`;
+  document.body.appendChild(c);
+  c.querySelector('#sb_out').onclick = async () => { await sb.auth.signOut(); location.reload(); };
+  c.querySelector('#sb_pw').onclick = setPassword;
+}
+async function setPassword() {
+  const p = prompt('Mật khẩu mới (ít nhất 8 ký tự):'); if (!p) return;
+  if (p.length < 8) return alert('Mật khẩu cần ít nhất 8 ký tự.');
+  const { error } = await sb.auth.updateUser({ password: p });
+  alert(error ? 'Không đổi được: ' + error.message : 'Đã đặt mật khẩu. Lần sau đăng nhập bằng email + mật khẩu.');
+}
+async function loadProfile() {
+  for (let i = 0; i < 5; i++) { // hồ sơ được tạo bằng trigger ngay khi có tài khoản
+    const { data } = await sb.from('qs_profiles').select('id,full_name,email,role,active').eq('id', SB_USER.id).maybeSingle();
+    if (data) return data; await new Promise(r => setTimeout(r, 600));
+  }
+  return null;
+}
+/* Bảng giá vốn chuẩn: chỉ tải sau khi đăng nhập (không nằm trong mã trang) */
+async function loadBaseCatalog() {
+  const rows = await must(sb.from('qs_price_catalog').select('code,name,unit,spec,cost,bien,market_min,market_max,source,data').eq('is_custom', false));
+  rows.sort((a, b) => (+a.data?.i || 0) - (+b.data?.i || 0));
+  window.__CAT_RAW__ = rows.map(r => [r.code, r.name, r.unit, r.spec || '', +r.cost, r.bien, +r.market_min, +r.market_max, r.source || '', r.data?.url || '', r.data?.conf || '', r.data?.ref || '']);
+  if (window.__CAT_RAW__.length < 300) throw new Error('Bảng giá tải về không đủ (' + window.__CAT_RAW__.length + ' mã)');
+}
+function loadScript2(src) { return new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => no(new Error('Không tải được ' + src)); document.body.appendChild(s); }); }
+let booted = false;
+async function cnvBoot(start) {
+  const go = async (session) => {
+    if (!session) { booted = false; loginScreen(); return; }
+    if (booted) return; booted = true;
+    SB_USER = session.user; SB_PROFILE = await loadProfile();
+    if (!SB_PROFILE || SB_PROFILE.active === false) { const em = SB_USER.email; await sb.auth.signOut(); booted = false; loginScreen('Tài khoản ' + em + ' chưa được Giám đốc duyệt hoặc đã bị khoá. Nhờ Giám đốc gán vai trò ở màn Người dùng rồi đăng nhập lại.'); return; }
+    document.getElementById('app').innerHTML = '<div class="empty" style="margin:20vh auto;text-align:center">Đang tải bảng giá…</div>';
+    try { await loadBaseCatalog(); await loadScript2(APP_BUNDLE); }
+    catch (e) { document.getElementById('app').innerHTML = '<div class="banner warn" style="margin:20vh auto;max-width:520px">Không tải được app: ' + (e.message || e) + '. Tải lại trang thử lại.</div>'; return; }
+    userChip(); watchTables(); start();
+    if (location.hash === '#dat-mat-khau') { history.replaceState(null, '', location.pathname); setPassword(); }
+  };
+  const { data: { session } } = await sb.auth.getSession();
+  await go(session);
+  sb.auth.onAuthStateChange((ev, s) => { if (ev === 'SIGNED_IN' && !booted) go(s); if (ev === 'SIGNED_OUT') location.reload(); });
+}
+
+cnvBoot(()=>{render();initDb();initAuth();});
+</script>
+</body>
+</html>

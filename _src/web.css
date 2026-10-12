@@ -1,0 +1,7 @@
+/* bản web: thanh tài khoản + màn đăng nhập */
+#sb_chip{position:fixed;right:12px;bottom:12px;z-index:50;display:flex;gap:6px;align-items:center;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:4px 8px;font-size:12px;color:var(--muted);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+#sb_chip span{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.login{padding:0 16px}
+.login .brand{display:flex;align-items:center;gap:10px}
+.login input{width:100%}
+@media print{#sb_chip{display:none}}
