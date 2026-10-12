@@ -203,13 +203,13 @@ function loginScreen(msg) {
   el.innerHTML = `<div class="login"><div class="panel stack" style="max-width:380px;margin:12vh auto;padding:28px">
    <div class="brand"><img class="logo" src="assets/logo.png" alt="CENOVA Design &amp; Build" width="132" height="36"><span class="appname">APP DỰ TOÁN</span></div>
    <h2 style="margin:8px 0 0">Đăng nhập</h2>
-   <label class="f"><span class="lbl">Email công ty</span><input id="lg_email" type="email" autocomplete="email" placeholder="ten@cenovaasia.com"></label>
+   <label class="f"><span class="lbl">Email hoặc tên đăng nhập</span><input id="lg_email" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="ten@cenovaasia.com hoặc admin"></label>
    <label class="f"><span class="lbl">Mật khẩu</span><input id="lg_pw" type="password" autocomplete="current-password" placeholder="Để trống nếu muốn nhận link qua email"></label>
    <div class="row" style="gap:8px;flex-wrap:wrap"><button class="b pri" id="lg_go">Đăng nhập</button><button class="b" id="lg_link">Gửi link đăng nhập qua email</button></div>
    <button class="b sm ghost" id="lg_reset" style="align-self:flex-start">Quên / đặt mật khẩu</button>
    <div id="lg_msg" class="sm ${msg ? '' : 'muted'}">${msg || 'Tài khoản do Giám đốc mời. Lần đầu: bấm “Gửi link đăng nhập”, mở email và bấm link.'}</div></div></div>`;
   const $m = t => { document.getElementById('lg_msg').textContent = t; };
-  const em = () => document.getElementById('lg_email').value.trim().toLowerCase();
+  const em = () => { const v = document.getElementById('lg_email').value.trim().toLowerCase(); return v && !v.includes('@') ? v + '@cenova.local' : v; };
   document.getElementById('lg_go').onclick = async () => {
     const pw = document.getElementById('lg_pw').value;
     if (!em()) return $m('Nhập email.');
